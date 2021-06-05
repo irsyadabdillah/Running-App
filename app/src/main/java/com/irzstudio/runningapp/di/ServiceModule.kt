@@ -34,6 +34,7 @@ object ServiceModule {
         .setSmallIcon(R.drawable.ic_directions_run)
         .setContentTitle("Running App")
         .setContentText("00:00:00")
+        .setContentIntent(pendingIntent)
 
     @ServiceScoped
     @Provides

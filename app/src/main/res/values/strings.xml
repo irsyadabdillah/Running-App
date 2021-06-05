@@ -12,7 +12,7 @@
         <item>Calories Burned</item>
     </string-array>
 
-    <string name="google_map_key" templateMergeStrategy="preserve" translatable="false"></string>
+    <string name="google_map_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBndzLTn_U29M0Mw-QjDmV0KO3SLivJquo</string>
 
 
 </resources>

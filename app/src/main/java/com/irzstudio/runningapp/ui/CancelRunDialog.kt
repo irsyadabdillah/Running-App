@@ -1,5 +1,6 @@
 package com.irzstudio.runningapp.ui
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
@@ -14,12 +15,16 @@ class CancelRunDialog : DialogFragment() {
         yesListener = listener
     }
 
+
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
-            .setTitle("Cancel the Run")
-            .setMessage("Are you sure that you want to cancel the current run and delete it's data?")
-            .setIcon(R.drawable.ic_delete)
-            .setPositiveButton("Yes") { _, _ ->
+
+        val builder = AlertDialog.Builder(activity)
+        return super.onCreateDialog(savedInstanceState)
+            builder.setTitle("Cancel the Run")
+            builder.setMessage("Are you sure that you want to cancel the current run and delete it's data?")
+            builder.setIcon(R.drawable.ic_delete)
+            builder.setPositiveButton("Yes") { _, _ ->
                 yesListener?.let { yes ->
                     yes()
                 }
@@ -27,7 +32,7 @@ class CancelRunDialog : DialogFragment() {
             .setNegativeButton("No") { dialogInterface, _ ->
                 dialogInterface.cancel()
             }
-            .create()
+            .create().show()
 
     }
 }

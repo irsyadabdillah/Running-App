@@ -6,11 +6,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.irzstudio.runningapp.R
 import com.irzstudio.runningapp.util.Constant
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_setting.*
+import kotlinx.android.synthetic.main.toolbar_layout.*
 import javax.inject.Inject
 
 
@@ -23,9 +26,10 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        actionBar()
         loadFieldFromSharedPref()
 
-        btn_change.setOnClickListener {
+        btn_apply_change.setOnClickListener {
             val success = applyChangeToSharedPref()
             if (success) {
                 Snackbar.make(requireView(), "Saved Changes", Snackbar.LENGTH_SHORT).show()
@@ -37,6 +41,13 @@ class SettingFragment : Fragment(R.layout.fragment_setting) {
                 ).show()
             }
         }
+    }
+
+    private fun actionBar() {
+        (activity as AppCompatActivity).setSupportActionBar(menu_toolbar)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.title = "SETTING"
+
     }
 
     private fun loadFieldFromSharedPref() {

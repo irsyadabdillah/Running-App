@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
+import com.irzstudio.runningapp.db.RunDao
 import com.irzstudio.runningapp.db.RunDatabase
 import com.irzstudio.runningapp.util.Constant
 import com.irzstudio.runningapp.util.Constant.Companion.KEY_FIRST_TIME_TOGGLE
@@ -29,7 +30,13 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRunDao(app: Application) =
+    fun provideRunDao(db: RunDatabase): RunDao {
+        return db.getRunDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideSharedPreferences(app: Application) =
         app.getSharedPreferences(SHARED_PREFERENCES_NAME, MODE_PRIVATE)
 
     @Singleton

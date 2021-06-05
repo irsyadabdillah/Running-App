@@ -4,7 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.location.Location
 import android.os.Build
-import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.LatLng
 import pub.devrel.easypermissions.EasyPermissions
 import java.util.concurrent.TimeUnit
 
@@ -49,7 +49,7 @@ class TrackingUtility {
                     "${if (milliseconds < 10 ) "0" else ""}$milliseconds:"
         }
 
-        fun calculatePolylineLength(polyline: Polyline): Float{
+        fun calculatePolylineLength(polyline: MutableList<LatLng>): Float{
             var distance = 0f
             for (i in 0..polyline.size - 2) {
                 val pos1 = polyline[i]

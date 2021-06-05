@@ -11,7 +11,7 @@ import com.irzstudio.runningapp.util.Constant
 @TypeConverters(Converters::class)
 abstract class RunDatabase: RoomDatabase() {
 
-    abstract fun runDao(): RunDao
+    abstract fun getRunDao(): RunDao
 
     companion object {
         private var INSTANCE: RunDatabase? = null

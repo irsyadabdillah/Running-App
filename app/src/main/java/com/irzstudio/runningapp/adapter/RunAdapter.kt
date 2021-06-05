@@ -3,6 +3,8 @@ package com.irzstudio.runningapp.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -17,6 +19,21 @@ class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
 
     private var list: MutableList<Run> = mutableListOf()
 
+    private val diffCalback = object : DiffUtil.ItemCallback<Run>(){
+        override fun areItemsTheSame(oldItem: Run, newItem: Run): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: Run, newItem: Run): Boolean {
+            return oldItem.hashCode() == newItem.hashCode()
+        }
+
+    }
+
+    val differ = AsyncListDiffer(this, diffCalback)
+
+    fun submitList(list: List<Run>) = differ.submitList(list)
+
     inner class RunViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(run: Run) {
             Glide.with(itemView)
@@ -27,10 +44,10 @@ class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
             val calendar = Calendar.getInstance().apply {
                 timeInMillis = run.timestamp
             }
-            val dataFormat = SimpleDateFormat("dd.mm.yy", Locale.getDefault())
+            val dataFormat = SimpleDateFormat("dd.MM.yy", Locale.getDefault())
             itemView.tv_date.text = dataFormat.format(calendar.time)
 
-            itemView.tv_average.text = "${run.avgSpeedInKMH} Km/h"
+            itemView.tv_avgspeed.text = "${run.avgSpeedInKMH} Km/h"
 
             itemView.tv_distance.text = "${run.distanceInMeters / 1000f} Km"
 
@@ -47,6 +64,7 @@ class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: RunAdapter.RunViewHolder, position: Int) {
+        val run = differ.currentList[position]
         holder.bind(list[position])
     }
 

@@ -11,9 +11,11 @@ import androidx.navigation.NavOptions
 import com.google.android.material.snackbar.Snackbar
 import com.irzstudio.runningapp.R
 import com.irzstudio.runningapp.util.Constant
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_setup.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class SetupFragment : Fragment(R.layout.fragment_setup) {
 
     @Inject
@@ -26,9 +28,6 @@ class SetupFragment : Fragment(R.layout.fragment_setup) {
         super.onViewCreated(view, savedInstanceState)
 
         if (!firstTimeAppOpen) {
-            val navOptions = NavOptions.Builder()
-                .setPopUpTo(R.id.setupFragment2, true)
-                .build()
             startActivity(Intent(activity, RunFragment::class.java))
         }
 

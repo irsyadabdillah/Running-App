@@ -3,9 +3,8 @@ package com.irzstudio.runningapp.ui.fragment
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -15,12 +14,15 @@ import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.irzstudio.runningapp.R
 import com.irzstudio.runningapp.ui.CustomMarkerView
-import com.irzstudio.runningapp.ui.activity.MainViewModel
 import com.irzstudio.runningapp.util.TrackingUtility
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_statistics.*
 import kotlinx.android.synthetic.main.item_run.*
+import kotlinx.android.synthetic.main.toolbar_layout.*
 import kotlin.math.round
 
+@AndroidEntryPoint
 class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
 
     private val viewModel: StatisticsViewModel by viewModels()
@@ -28,8 +30,16 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        actionBar()
         setupLineChart()
         subscribeToObserve()
+    }
+
+    private fun actionBar() {
+        (activity as AppCompatActivity).setSupportActionBar(menu_toolbar)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.title = "STATISTIC"
+
     }
 
     private fun setupLineChart() {
@@ -37,6 +47,7 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
             position = XAxis.XAxisPosition.BOTTOM
             setDrawLabels(false)
             axisLineColor = Color.WHITE
+            textColor = Color.WHITE
             setDrawGridLines(false)
         }
         bar_chart.axisLeft.apply {
@@ -85,7 +96,7 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
 
         viewModel.runsSortedByDate.observe(viewLifecycleOwner, Observer{
             it?.let {
-                val allAvgSpeed = it.indices.map{ i -> BarEntry(i.toFloat(), it.[i].avgSpeedInKmh)}
+                val allAvgSpeed = it.indices.map { i -> BarEntry(i.toFloat(), it[i].avgSpeedInKMH)}
 
                 val bardataSet = BarDataSet(allAvgSpeed, "Avg Speed over time")
                 bardataSet.apply {

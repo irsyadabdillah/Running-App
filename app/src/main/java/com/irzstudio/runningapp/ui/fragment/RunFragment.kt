@@ -4,28 +4,31 @@ import android.Manifest
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.irzstudio.runningapp.R
 import com.irzstudio.runningapp.adapter.RunAdapter
+import com.irzstudio.runningapp.ui.activity.MainActivity
 import com.irzstudio.runningapp.ui.activity.MainViewModel
 import com.irzstudio.runningapp.util.Constant
 import com.irzstudio.runningapp.util.SortType
 import com.irzstudio.runningapp.util.TrackingUtility
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_run.*
+import kotlinx.android.synthetic.main.toolbar_layout.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
-import java.util.*
 
+
+@AndroidEntryPoint
 class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionCallbacks {
 
     private val runAdapter: RunAdapter by lazy {
@@ -33,13 +36,18 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
     }
     private val viewModel: MainViewModel by viewModels()
 
+    private var navToTracking : MainActivity? = null
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        actionBar()
         setupRecyclerView()
         requestPermissions()
         fab.setOnClickListener{
-            startActivity(Intent(activity, TrackingFragment::class.java))
+            navToTracking?.navigationToTracking()
         }
 
         when (viewModel.sortType) {
@@ -49,29 +57,45 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
             SortType.AVG_SPEED -> sp_filter.setSelection(3)
             SortType.CALORIES_BURED -> sp_filter.setSelection(4)
         }
-        viewModel.runs.observe(viewLifecycleOwner, Observer{ runs ->
-            runAdapter.setDataRun(runs)
+        viewModel.runs.observe(viewLifecycleOwner, { runs ->
+            runAdapter.submitList(runs)
         })
 
-        sp_filter.onItemSelectedListener = object : AdapterView.OnItemClickListener{
-            fun onNothingSelected(adapterView: AdapterView<*>?) {}
-            override fun onItemClick(
+        sp_filter.onItemSelectedListener = object : AdapterView.OnItemClickListener,
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
                 position: Int,
                 id: Long
             ) {
-                when (pos) {
+                when (position) {
                     0 -> viewModel.sortRuns(SortType.DATE)
                     1 -> viewModel.sortRuns(SortType.RUNNING_TIME)
                     2 -> viewModel.sortRuns(SortType.DISTANCE)
                     3 -> viewModel.sortRuns(SortType.AVG_SPEED)
                     4 -> viewModel.sortRuns(SortType.CALORIES_BURED)
                 }
-
             }
 
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+            }
         }
+    }
+
+    private fun actionBar() {
+        (activity as AppCompatActivity).setSupportActionBar(menu_toolbar)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity).supportActionBar?.title = "RUN"
+
     }
 
     private val itemToucHelperCallback = object : ItemTouchHelper.SimpleCallback(
@@ -87,7 +111,7 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position =viewHolder.layoutPosition
-            val run = runAdapter.differ.currentlist[position]
+            val run = runAdapter.differ.currentList[position]
             viewModel.deleteRun(run)
             Snackbar.make(requireView(), "Successfully delete Run", Snackbar.LENGTH_LONG).apply {
                 setAction("Undo"){
@@ -130,7 +154,7 @@ class RunFragment : Fragment(R.layout.fragment_run), EasyPermissions.PermissionC
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)){
-            AppSettingsDialog.Builder(this).setThemeResId(R.style.AlertDialogTheme).build().show()
+            AppSettingsDialog.Builder(this).build().show()
         }else{
             requestPermissions()
         }
